@@ -1,0 +1,461 @@
+[
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/Dockerfile",
+    "issue_type": "dockerfile.security.missing-user.missing-user",
+    "id": "dockerfile.security.missing-user.missing-user",
+    "severity": 1,
+    "evidence": "By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'.",
+    "timestamp": "2026-03-16T22:46:06.072256+00:00",
+    "metadata": {
+      "line_start": 22,
+      "line_end": 22,
+      "category": "container-security"
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+    "id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+    "severity": 1,
+    "evidence": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+    "timestamp": "2026-03-16T22:46:06.072269+00:00",
+    "metadata": {
+      "line_start": 28,
+      "line_end": 28,
+      "correlated_tools": [
+        "semgrep"
+      ],
+      "correlated_ids": [
+        "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+        "python.lang.security.audit.md5-used-as-password.md5-used-as-password"
+      ],
+      "correlation_count": 2,
+      "category": "secrets",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.django.security.injection.tainted-sql-string.tainted-sql-string",
+    "id": "python.django.security.injection.tainted-sql-string.tainted-sql-string",
+    "severity": 1,
+    "evidence": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using the Django object-relational mappers (ORM) instead of raw SQL queries.",
+    "timestamp": "2026-03-16T22:46:06.072276+00:00",
+    "metadata": {
+      "line_start": 47,
+      "line_end": 47,
+      "correlated_tools": [
+        "semgrep"
+      ],
+      "correlated_ids": [
+        "python.django.security.injection.tainted-sql-string.tainted-sql-string",
+        "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+        "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+        "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+        "python.lang.security.dangerous-system-call.dangerous-system-call",
+        "python.flask.security.injection.subprocess-injection.subprocess-injection",
+        "python.lang.security.dangerous-subprocess-use.dangerous-subprocess-use",
+        "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+        "python.flask.security.insecure-deserialization.insecure-deserialization"
+      ],
+      "correlation_count": 11,
+      "category": "injection",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.open-redirect.open-redirect",
+    "id": "python.flask.security.open-redirect.open-redirect",
+    "severity": 1,
+    "evidence": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.",
+    "timestamp": "2026-03-16T22:46:06.072315+00:00",
+    "metadata": {
+      "line_start": 148,
+      "line_end": 151,
+      "category": "resource-limits"
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host",
+    "id": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host",
+    "severity": 1,
+    "evidence": "Running flask app with host 0.0.0.0 could expose the server publicly.",
+    "timestamp": "2026-03-16T22:46:06.072317+00:00",
+    "metadata": {
+      "line_start": 177,
+      "line_end": 181,
+      "correlated_tools": [
+        "semgrep"
+      ],
+      "correlated_ids": [
+        "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host",
+        "python.flask.security.audit.debug-enabled.debug-enabled"
+      ],
+      "correlation_count": 2,
+      "category": "other",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-30861",
+    "severity": 7,
+    "evidence": "flask: Possible disclosure of permanent session cookie due to missing Vary: Cookie header",
+    "timestamp": "2026-03-16T22:46:06.073351+00:00",
+    "metadata": {
+      "pkg_name": "Flask",
+      "installed_version": "2.2.0",
+      "fixed_version": "2.3.2, 2.2.5",
+      "cvss_score": 7.5,
+      "correlated_tools": [
+        "trivy"
+      ],
+      "correlated_ids": [
+        "CVE-2023-30861",
+        "CVE-2023-0286",
+        "CVE-2023-4863",
+        "CVE-2024-28219",
+        "CVE-2022-40897",
+        "CVE-2025-47273",
+        "CVE-2025-66471",
+        "CVE-2026-21441",
+        "CVE-2024-56201",
+        "CVE-2024-56326",
+        "CVE-2025-27516",
+        "CVE-2024-49766",
+        "CVE-2025-66221",
+        "CVE-2026-21860",
+        "CVE-2026-27199",
+        "CVE-2024-0727",
+        "CVE-2021-34141",
+        "CVE-2023-48795",
+        "CVE-2025-50181",
+        "CVE-2026-27205",
+        "CVE-2023-23934"
+      ],
+      "correlation_count": 21,
+      "category": "dependency-vuln",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-50447",
+    "severity": 9,
+    "evidence": "pillow: Arbitrary Code Execution via the environment parameter",
+    "timestamp": "2026-03-16T22:46:06.073442+00:00",
+    "metadata": {
+      "pkg_name": "pillow",
+      "installed_version": "9.3.0",
+      "fixed_version": "10.2.0",
+      "cvss_score": 8.1,
+      "correlated_tools": [
+        "trivy"
+      ],
+      "correlated_ids": [
+        "CVE-2023-50447",
+        "CVE-2024-34069",
+        "CVE-2024-6345",
+        "CVE-2024-22195"
+      ],
+      "correlation_count": 4,
+      "category": "injection",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-34064",
+    "severity": 5,
+    "evidence": "jinja2: accepts keys containing non-attribute characters",
+    "timestamp": "2026-03-16T22:46:06.073369+00:00",
+    "metadata": {
+      "pkg_name": "Jinja2",
+      "installed_version": "3.1.2",
+      "fixed_version": "3.1.4",
+      "cvss_score": null,
+      "category": "secrets"
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-25577",
+    "severity": 7,
+    "evidence": "python-werkzeug: high resource usage when parsing multipart form data with many fields",
+    "timestamp": "2026-03-16T22:46:06.073387+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "2.2.3",
+      "cvss_score": 7.5,
+      "correlated_tools": [
+        "trivy"
+      ],
+      "correlated_ids": [
+        "CVE-2023-25577",
+        "CVE-2023-44271",
+        "CVE-2023-43804",
+        "CVE-2025-66418",
+        "CVE-2023-46136",
+        "CVE-2024-49767",
+        "CVE-2023-23931",
+        "CVE-2023-32681",
+        "CVE-2024-35195",
+        "CVE-2024-47081",
+        "CVE-2023-45803",
+        "CVE-2024-37891"
+      ],
+      "correlation_count": 12,
+      "category": "resource-limits",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-37920",
+    "severity": 7,
+    "evidence": "python-certifi: Removal of e-Tugra root certificate",
+    "timestamp": "2026-03-16T22:46:06.073410+00:00",
+    "metadata": {
+      "pkg_name": "certifi",
+      "installed_version": "2022.12.7",
+      "fixed_version": "2023.7.22",
+      "cvss_score": 9.8,
+      "correlated_tools": [
+        "trivy"
+      ],
+      "correlated_ids": [
+        "CVE-2023-37920",
+        "CVE-2024-39689"
+      ],
+      "correlation_count": 2,
+      "category": "container-security",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-50782",
+    "severity": 7,
+    "evidence": "python-cryptography: Bleichenbacher timing oracle attack against RSA decryption - incomplete fix for CVE-2020-25659",
+    "timestamp": "2026-03-16T22:46:06.073416+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "42.0.0",
+      "cvss_score": 7.5,
+      "correlated_tools": [
+        "trivy"
+      ],
+      "correlated_ids": [
+        "CVE-2023-50782",
+        "CVE-2026-26007",
+        "CVE-2023-49083",
+        "GHSA-5cpq-8wj7-hf2v",
+        "GHSA-jm77-qphf-c4w8",
+        "GHSA-v8gr-m533-ghj9"
+      ],
+      "correlation_count": 6,
+      "category": "crypto",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/Dockerfile",
+    "issue_type": "Ensure that HEALTHCHECK instructions have been added to container images",
+    "id": "CKV_DOCKER_2",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-healthcheck-instructions-have-been-added-to-container-images",
+    "timestamp": "2026-03-16T22:46:06.074028+00:00",
+    "metadata": {
+      "resource": "/Dockerfile.",
+      "file_line_range": [
+        1,
+        22
+      ],
+      "category": "availability"
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/Dockerfile",
+    "issue_type": "Ensure that a user for the container has been created",
+    "id": "CKV_DOCKER_3",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-a-user-for-the-container-has-been-created",
+    "timestamp": "2026-03-16T22:46:06.074035+00:00",
+    "metadata": {
+      "resource": "/Dockerfile.",
+      "file_line_range": [
+        1,
+        22
+      ],
+      "category": "other"
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Image should use digest",
+    "id": "CKV_K8S_43",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-39",
+    "timestamp": "2026-03-16T22:46:06.075667+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ],
+      "correlated_tools": [
+        "checkov"
+      ],
+      "correlated_ids": [
+        "CKV_K8S_43",
+        "CKV_K8S_14"
+      ],
+      "correlation_count": 2,
+      "category": "image-hygiene",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Use read-only filesystem for containers where possible",
+    "id": "CKV_K8S_22",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-21",
+    "timestamp": "2026-03-16T22:46:06.075675+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ],
+      "category": "other"
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Minimize the admission of containers with the NET_RAW capability",
+    "id": "CKV_K8S_28",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-27",
+    "timestamp": "2026-03-16T22:46:06.075678+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ],
+      "correlated_tools": [
+        "checkov"
+      ],
+      "correlated_ids": [
+        "CKV_K8S_28",
+        "CKV_K8S_21",
+        "CKV_K8S_21",
+        "CKV_K8S_16"
+      ],
+      "correlation_count": 4,
+      "category": "container-security",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Readiness Probe Should be Configured",
+    "id": "CKV_K8S_9",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-8",
+    "timestamp": "2026-03-16T22:46:06.075686+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ],
+      "correlated_tools": [
+        "checkov"
+      ],
+      "correlated_ids": [
+        "CKV_K8S_9",
+        "CKV_K8S_8"
+      ],
+      "correlation_count": 2,
+      "category": "availability",
+      "correlation_boost": false
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Memory Limits should be set",
+    "id": "CKV_K8S_12",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-11",
+    "timestamp": "2026-03-16T22:46:06.075698+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ],
+      "correlated_tools": [
+        "checkov"
+      ],
+      "correlated_ids": [
+        "CKV_K8S_12",
+        "CKV_K8S_13",
+        "CKV_K8S_10",
+        "CKV_K8S_11"
+      ],
+      "correlation_count": 4,
+      "category": "resource-limits",
+      "correlation_boost": false
+    }
+  }
+]

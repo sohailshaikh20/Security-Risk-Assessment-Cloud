@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevSecOps Security Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-primary: #0a0e1a; --bg-secondary: #111827; --bg-card: #1a2035;
+    --bg-card-hover: #1f2847; --border: #2a3352;
+    --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-muted: #64748b;
+    --accent-blue: #3b82f6; --accent-cyan: #06b6d4;
+    --critical: #ef4444; --high: #f97316; --medium: #eab308;
+    --low: #3b82f6; --info: #6b7280; --success: #22c55e;
+  }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+  .header { background: linear-gradient(135deg, var(--bg-secondary) 0%, #0f172a 100%); border-bottom: 1px solid var(--border); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header-left { display: flex; align-items: center; gap: 1rem; }
+  .logo { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .header h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
+  .header h1 span { color: var(--accent-cyan); }
+  .header-meta { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem 2rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; transition: all 0.2s; }
+  .stat-card:hover { background: var(--bg-card-hover); border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(59,130,246,0.15); }
+  .stat-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; }
+  .stat-card .value { font-size: 1.8rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+  .stat-card .sub { font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.4rem; }
+  .stat-card.critical .value { color: var(--critical); }
+  .stat-card.high .value { color: var(--high); }
+  .stat-card.medium .value { color: var(--medium); }
+  .stat-card.low .value { color: var(--low); }
+  .stat-card.total .value { color: var(--accent-cyan); }
+  .stat-card.score .value { color: var(--accent-blue); }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+  @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+  .chart-card h3 { font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+  .chart-container { position: relative; height: 260px; }
+  .table-section { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+  .table-header { padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .table-header h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); }
+  .filters { display: flex; gap: 0.5rem; }
+  .filter-btn { padding: 0.35rem 0.75rem; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .filter-btn:hover, .filter-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 0.7rem 1rem; text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+  td { padding: 0.65rem 1rem; font-size: 0.8rem; border-bottom: 1px solid rgba(42,51,82,0.5); vertical-align: middle; }
+  tr:hover td { background: rgba(59,130,246,0.04); }
+  .badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em; font-family: 'JetBrains Mono', monospace; }
+  .badge-critical { background: rgba(239,68,68,0.15); color: var(--critical); }
+  .badge-high { background: rgba(249,115,22,0.15); color: var(--high); }
+  .badge-medium { background: rgba(234,179,8,0.15); color: var(--medium); }
+  .badge-low { background: rgba(59,130,246,0.15); color: var(--low); }
+  .badge-info { background: rgba(107,114,128,0.15); color: var(--info); }
+  .tool-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.68rem; font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+  .tool-semgrep { background: rgba(139,92,246,0.15); color: #a78bfa; }
+  .tool-trivy { background: rgba(6,182,212,0.15); color: #22d3ee; }
+  .tool-checkov { background: rgba(16,185,129,0.15); color: #34d399; }
+  .score-bar { display: flex; align-items: center; gap: 0.5rem; }
+  .score-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; min-width: 60px; }
+  .score-bar-fill { height: 100%; border-radius: 3px; }
+  .score-val { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; min-width: 40px; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+  .text-truncate { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .explanation-row { display: none; }
+  .explanation-row.visible { display: table-row; }
+  .explanation-content { padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; margin: 0.5rem; }
+  .explanation-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .explain-item { display: flex; justify-content: space-between; padding: 0.3rem 0; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .explain-item .ek { color: var(--text-muted); }
+  .explain-item .ev { font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); }
+  .gate-status { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600; }
+  .gate-fail { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--critical); }
+  .gate-pass { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: var(--success); }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2s infinite; }
+  .pulse-red { background: var(--critical); }
+  .pulse-green { background: var(--success); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.72rem; border-top: 1px solid var(--border); }
+  .no-charts { display: flex; align-items: center; justify-content: center; height: 260px; color: var(--text-muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">&#x1f6e1;</div>
+    <div>
+      <h1>DevSec<span>Ops</span> Security Dashboard</h1>
+      <div class="header-meta">Generated: 2026-03-16T22:46:06.159784+00:00</div>
+    </div>
+  </div>
+  <div id="gateStatus"></div>
+</div>
+
+<div class="container">
+  <div class="stats-grid" id="statsGrid"></div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Risk Distribution</h3>
+      <div class="chart-container" id="riskDistContainer"><canvas id="riskDistChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Findings by Tool &amp; Severity</h3>
+      <div class="chart-container" id="toolContainer"><canvas id="toolChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Risk Score Breakdown (Top Findings)</h3>
+      <div class="chart-container" id="breakdownContainer"><canvas id="breakdownChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>ML Prediction vs Rule-Based Score</h3>
+      <div class="chart-container" id="mlContainer"><canvas id="mlChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-header">
+      <h3>All Findings</h3>
+      <div class="filters">
+        <button class="filter-btn active" onclick="filterFindings('all')">All</button>
+        <button class="filter-btn" onclick="filterFindings('CRITICAL')">Critical</button>
+        <button class="filter-btn" onclick="filterFindings('HIGH')">High</button>
+        <button class="filter-btn" onclick="filterFindings('MEDIUM')">Medium</button>
+        <button class="filter-btn" onclick="filterFindings('LOW')">Low</button>
+      </div>
+    </div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Risk</th><th>Score</th><th>Tool</th><th>ID</th>
+            <th>Issue</th><th>Asset</th><th>Stage</th><th>ML Prob</th>
+          </tr>
+        </thead>
+        <tbody id="findingsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  AI-Assisted DevSecOps Risk Assessment &mdash; MD Sohail Shaikh &mdash; Generated by automated security pipeline
+</div>
+
+<script>
+
+const findings = [{"tool": "trivy", "stage": "SCA", "asset": "requirements.txt", "issue_type": "CVE", "id": "CVE-2023-37920", "severity": 7, "evidence": "python-certifi: Removal of e-Tugra root certificate", "timestamp": "2026-03-16T22:46:06.073410+00:00", "metadata": {"pkg_name": "certifi", "installed_version": "2022.12.7", "fixed_version": "2023.7.22", "cvss_score": 9.8, "correlated_tools": ["trivy"], "correlated_ids": ["CVE-2023-37920", "CVE-2024-39689"], "correlation_count": 2, "category": "container-security", "correlation_boost": false}, "risk_score": 0.7545, "risk_label": "CRITICAL", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.0, "score_breakdown": {"severity": 0.392, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1275, "freshness": 0.1}, "feature_values": {"severity_norm": 0.98, "exposure": "unknown", "criticality": "unknown", "confidence": 0.85, "freshness_norm": 1.0, "stage": "SCA"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/main.tf", "issue_type": "Image should use digest", "id": "CKV_K8S_43", "severity": 7, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-39", "timestamp": "2026-03-16T22:46:06.075667+00:00", "metadata": {"resource": "kubernetes_deployment.vulnerable_app", "file_line_range": [24, 92], "correlated_tools": ["checkov"], "correlated_ids": ["CKV_K8S_43", "CKV_K8S_14"], "correlation_count": 2, "category": "image-hygiene", "correlation_boost": false}, "risk_score": 0.6985, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.28, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.7, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/main.tf", "issue_type": "Use read-only filesystem for containers where possible", "id": "CKV_K8S_22", "severity": 7, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-21", "timestamp": "2026-03-16T22:46:06.075675+00:00", "metadata": {"resource": "kubernetes_deployment.vulnerable_app", "file_line_range": [24, 92], "category": "other"}, "risk_score": 0.6985, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.28, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.7, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/main.tf", "issue_type": "Minimize the admission of containers with the NET_RAW capability", "id": "CKV_K8S_28", "severity": 7, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-27", "timestamp": "2026-03-16T22:46:06.075678+00:00", "metadata": {"resource": "kubernetes_deployment.vulnerable_app", "file_line_range": [24, 92], "correlated_tools": ["checkov"], "correlated_ids": ["CKV_K8S_28", "CKV_K8S_21", "CKV_K8S_21", "CKV_K8S_16"], "correlation_count": 4, "category": "container-security", "correlation_boost": false}, "risk_score": 0.6985, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.28, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.7, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "trivy", "stage": "SCA", "asset": "requirements.txt", "issue_type": "CVE", "id": "CVE-2023-50447", "severity": 9, "evidence": "pillow: Arbitrary Code Execution via the environment parameter", "timestamp": "2026-03-16T22:46:06.073442+00:00", "metadata": {"pkg_name": "pillow", "installed_version": "9.3.0", "fixed_version": "10.2.0", "cvss_score": 8.1, "correlated_tools": ["trivy"], "correlated_ids": ["CVE-2023-50447", "CVE-2024-34069", "CVE-2024-6345", "CVE-2024-22195"], "correlation_count": 4, "category": "injection", "correlation_boost": false}, "risk_score": 0.6865, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.0, "score_breakdown": {"severity": 0.324, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1275, "freshness": 0.1}, "feature_values": {"severity_norm": 0.81, "exposure": "unknown", "criticality": "unknown", "confidence": 0.85, "freshness_norm": 1.0, "stage": "SCA"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "trivy", "stage": "SCA", "asset": "requirements.txt", "issue_type": "CVE", "id": "CVE-2023-30861", "severity": 7, "evidence": "flask: Possible disclosure of permanent session cookie due to missing Vary: Cookie header", "timestamp": "2026-03-16T22:46:06.073351+00:00", "metadata": {"pkg_name": "Flask", "installed_version": "2.2.0", "fixed_version": "2.3.2, 2.2.5", "cvss_score": 7.5, "correlated_tools": ["trivy"], "correlated_ids": ["CVE-2023-30861", "CVE-2023-0286", "CVE-2023-4863", "CVE-2024-28219", "CVE-2022-40897", "CVE-2025-47273", "CVE-2025-66471", "CVE-2026-21441", "CVE-2024-56201", "CVE-2024-56326", "CVE-2025-27516", "CVE-2024-49766", "CVE-2025-66221", "CVE-2026-21860", "CVE-2026-27199", "CVE-2024-0727", "CVE-2021-34141", "CVE-2023-48795", "CVE-2025-50181", "CVE-2026-27205", "CVE-2023-23934"], "correlation_count": 21, "category": "dependency-vuln", "correlation_boost": false}, "risk_score": 0.6625, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.0, "score_breakdown": {"severity": 0.3, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1275, "freshness": 0.1}, "feature_values": {"severity_norm": 0.75, "exposure": "unknown", "criticality": "unknown", "confidence": 0.85, "freshness_norm": 1.0, "stage": "SCA"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "trivy", "stage": "SCA", "asset": "requirements.txt", "issue_type": "CVE", "id": "CVE-2023-25577", "severity": 7, "evidence": "python-werkzeug: high resource usage when parsing multipart form data with many fields", "timestamp": "2026-03-16T22:46:06.073387+00:00", "metadata": {"pkg_name": "Werkzeug", "installed_version": "2.2.2", "fixed_version": "2.2.3", "cvss_score": 7.5, "correlated_tools": ["trivy"], "correlated_ids": ["CVE-2023-25577", "CVE-2023-44271", "CVE-2023-43804", "CVE-2025-66418", "CVE-2023-46136", "CVE-2024-49767", "CVE-2023-23931", "CVE-2023-32681", "CVE-2024-35195", "CVE-2024-47081", "CVE-2023-45803", "CVE-2024-37891"], "correlation_count": 12, "category": "resource-limits", "correlation_boost": false}, "risk_score": 0.6625, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.0, "score_breakdown": {"severity": 0.3, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1275, "freshness": 0.1}, "feature_values": {"severity_norm": 0.75, "exposure": "unknown", "criticality": "unknown", "confidence": 0.85, "freshness_norm": 1.0, "stage": "SCA"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "trivy", "stage": "SCA", "asset": "requirements.txt", "issue_type": "CVE", "id": "CVE-2023-50782", "severity": 7, "evidence": "python-cryptography: Bleichenbacher timing oracle attack against RSA decryption - incomplete fix for CVE-2020-25659", "timestamp": "2026-03-16T22:46:06.073416+00:00", "metadata": {"pkg_name": "cryptography", "installed_version": "3.4.8", "fixed_version": "42.0.0", "cvss_score": 7.5, "correlated_tools": ["trivy"], "correlated_ids": ["CVE-2023-50782", "CVE-2026-26007", "CVE-2023-49083", "GHSA-5cpq-8wj7-hf2v", "GHSA-jm77-qphf-c4w8", "GHSA-v8gr-m533-ghj9"], "correlation_count": 6, "category": "crypto", "correlation_boost": false}, "risk_score": 0.6625, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.0, "score_breakdown": {"severity": 0.3, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1275, "freshness": 0.1}, "feature_values": {"severity_norm": 0.75, "exposure": "unknown", "criticality": "unknown", "confidence": 0.85, "freshness_norm": 1.0, "stage": "SCA"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/Dockerfile", "issue_type": "Ensure that HEALTHCHECK instructions have been added to container images", "id": "CKV_DOCKER_2", "severity": 5, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-healthcheck-instructions-have-been-added-to-container-images", "timestamp": "2026-03-16T22:46:06.074028+00:00", "metadata": {"resource": "/Dockerfile.", "file_line_range": [1, 22], "category": "availability"}, "risk_score": 0.6105, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.2, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.5, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/Dockerfile", "issue_type": "Ensure that a user for the container has been created", "id": "CKV_DOCKER_3", "severity": 5, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-a-user-for-the-container-has-been-created", "timestamp": "2026-03-16T22:46:06.074035+00:00", "metadata": {"resource": "/Dockerfile.", "file_line_range": [1, 22], "category": "other"}, "risk_score": 0.6105, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.2, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.5, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/main.tf", "issue_type": "Readiness Probe Should be Configured", "id": "CKV_K8S_9", "severity": 5, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-8", "timestamp": "2026-03-16T22:46:06.075686+00:00", "metadata": {"resource": "kubernetes_deployment.vulnerable_app", "file_line_range": [24, 92], "correlated_tools": ["checkov"], "correlated_ids": ["CKV_K8S_9", "CKV_K8S_8"], "correlation_count": 2, "category": "availability", "correlation_boost": false}, "risk_score": 0.6105, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.2, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.5, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "checkov", "stage": "IaC", "asset": "/main.tf", "issue_type": "Memory Limits should be set", "id": "CKV_K8S_12", "severity": 5, "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-11", "timestamp": "2026-03-16T22:46:06.075698+00:00", "metadata": {"resource": "kubernetes_deployment.vulnerable_app", "file_line_range": [24, 92], "correlated_tools": ["checkov"], "correlated_ids": ["CKV_K8S_12", "CKV_K8S_13", "CKV_K8S_10", "CKV_K8S_11"], "correlation_count": 4, "category": "resource-limits", "correlation_boost": false}, "risk_score": 0.6105, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.1, "score_breakdown": {"severity": 0.2, "exposure": 0.06, "criticality": 0.075, "confidence": 0.12, "freshness": 0.1}, "feature_values": {"severity_norm": 0.5, "exposure": "unknown", "criticality": "unknown", "confidence": 0.8, "freshness_norm": 1.0, "stage": "IaC"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "trivy", "stage": "SCA", "asset": "requirements.txt", "issue_type": "CVE", "id": "CVE-2024-34064", "severity": 5, "evidence": "jinja2: accepts keys containing non-attribute characters", "timestamp": "2026-03-16T22:46:06.073369+00:00", "metadata": {"pkg_name": "Jinja2", "installed_version": "3.1.2", "fixed_version": "3.1.4", "cvss_score": null, "category": "secrets"}, "risk_score": 0.5625, "risk_label": "HIGH", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 1.0, "score_breakdown": {"severity": 0.2, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1275, "freshness": 0.1}, "feature_values": {"severity_norm": 0.5, "exposure": "unknown", "criticality": "unknown", "confidence": 0.85, "freshness_norm": 1.0, "stage": "SCA"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "semgrep", "stage": "SAST", "asset": "app/starbucks/Dockerfile", "issue_type": "dockerfile.security.missing-user.missing-user", "id": "dockerfile.security.missing-user.missing-user", "severity": 1, "evidence": "By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'.", "timestamp": "2026-03-16T22:46:06.072256+00:00", "metadata": {"line_start": 22, "line_end": 22, "category": "container-security"}, "risk_score": 0.3487, "risk_label": "LOW", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 0.9, "score_breakdown": {"severity": 0.04, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1125, "freshness": 0.1}, "feature_values": {"severity_norm": 0.1, "exposure": "unknown", "criticality": "unknown", "confidence": 0.75, "freshness_norm": 1.0, "stage": "SAST"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "semgrep", "stage": "SAST", "asset": "app/starbucks/app.py", "issue_type": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY", "id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY", "severity": 1, "evidence": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead", "timestamp": "2026-03-16T22:46:06.072269+00:00", "metadata": {"line_start": 28, "line_end": 28, "correlated_tools": ["semgrep"], "correlated_ids": ["python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY", "python.lang.security.audit.md5-used-as-password.md5-used-as-password"], "correlation_count": 2, "category": "secrets", "correlation_boost": false}, "risk_score": 0.3487, "risk_label": "LOW", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 0.9, "score_breakdown": {"severity": 0.04, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1125, "freshness": 0.1}, "feature_values": {"severity_norm": 0.1, "exposure": "unknown", "criticality": "unknown", "confidence": 0.75, "freshness_norm": 1.0, "stage": "SAST"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "semgrep", "stage": "SAST", "asset": "app/starbucks/app.py", "issue_type": "python.django.security.injection.tainted-sql-string.tainted-sql-string", "id": "python.django.security.injection.tainted-sql-string.tainted-sql-string", "severity": 1, "evidence": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using the Django object-relational mappers (ORM) instead of raw SQL queries.", "timestamp": "2026-03-16T22:46:06.072276+00:00", "metadata": {"line_start": 47, "line_end": 47, "correlated_tools": ["semgrep"], "correlated_ids": ["python.django.security.injection.tainted-sql-string.tainted-sql-string", "python.flask.security.injection.tainted-sql-string.tainted-sql-string", "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query", "python.flask.security.injection.tainted-sql-string.tainted-sql-string", "python.lang.security.audit.formatted-sql-query.formatted-sql-query", "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query", "python.lang.security.dangerous-system-call.dangerous-system-call", "python.flask.security.injection.subprocess-injection.subprocess-injection", "python.lang.security.dangerous-subprocess-use.dangerous-subprocess-use", "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true", "python.flask.security.insecure-deserialization.insecure-deserialization"], "correlation_count": 11, "category": "injection", "correlation_boost": false}, "risk_score": 0.3487, "risk_label": "LOW", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 0.9, "score_breakdown": {"severity": 0.04, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1125, "freshness": 0.1}, "feature_values": {"severity_norm": 0.1, "exposure": "unknown", "criticality": "unknown", "confidence": 0.75, "freshness_norm": 1.0, "stage": "SAST"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "semgrep", "stage": "SAST", "asset": "app/starbucks/app.py", "issue_type": "python.flask.security.open-redirect.open-redirect", "id": "python.flask.security.open-redirect.open-redirect", "severity": 1, "evidence": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.", "timestamp": "2026-03-16T22:46:06.072315+00:00", "metadata": {"line_start": 148, "line_end": 151, "category": "resource-limits"}, "risk_score": 0.3487, "risk_label": "LOW", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 0.9, "score_breakdown": {"severity": 0.04, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1125, "freshness": 0.1}, "feature_values": {"severity_norm": 0.1, "exposure": "unknown", "criticality": "unknown", "confidence": 0.75, "freshness_norm": 1.0, "stage": "SAST"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}, {"tool": "semgrep", "stage": "SAST", "asset": "app/starbucks/app.py", "issue_type": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host", "id": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host", "severity": 1, "evidence": "Running flask app with host 0.0.0.0 could expose the server publicly.", "timestamp": "2026-03-16T22:46:06.072317+00:00", "metadata": {"line_start": 177, "line_end": 181, "correlated_tools": ["semgrep"], "correlated_ids": ["python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host", "python.flask.security.audit.debug-enabled.debug-enabled"], "correlation_count": 2, "category": "other", "correlation_boost": false}, "risk_score": 0.3487, "risk_label": "LOW", "explanation": {"model": "weighted-linear-risk-v2", "stage_multiplier": 0.9, "score_breakdown": {"severity": 0.04, "exposure": 0.06, "criticality": 0.075, "confidence": 0.1125, "freshness": 0.1}, "feature_values": {"severity_norm": 0.1, "exposure": "unknown", "criticality": "unknown", "confidence": 0.75, "freshness_norm": 1.0, "stage": "SAST"}, "weights": {"severity": 0.4, "exposure": 0.2, "criticality": 0.15, "confidence": 0.15, "freshness": 0.1}}}];
+
+const assets = [{"asset": "requirements.txt", "avg_risk": 0.6652, "max_risk": 0.7545, "count": 6, "risk_label": "CRITICAL"}, {"asset": "/main.tf", "avg_risk": 0.6633, "max_risk": 0.6985, "count": 5, "risk_label": "HIGH"}, {"asset": "/Dockerfile", "avg_risk": 0.6105, "max_risk": 0.6105, "count": 2, "risk_label": "HIGH"}, {"asset": "app/starbucks/Dockerfile", "avg_risk": 0.3487, "max_risk": 0.3487, "count": 1, "risk_label": "LOW"}, {"asset": "app/starbucks/app.py", "avg_risk": 0.3487, "max_risk": 0.3487, "count": 4, "risk_label": "LOW"}];
+
+const mlData = [{"id": "CVE-2023-37920", "asset": "requirements.txt", "tool": "trivy", "risk_score": 0.7545, "risk_label": "CRITICAL", "severity": 0.98, "confidence": 0.85, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 1.0, "anomaly_score": 0.5956}, {"id": "CKV_K8S_43", "asset": "/main.tf", "tool": "checkov", "risk_score": 0.6985, "risk_label": "HIGH", "severity": 0.7, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.99, "anomaly_score": 0.2652}, {"id": "CKV_K8S_22", "asset": "/main.tf", "tool": "checkov", "risk_score": 0.6985, "risk_label": "HIGH", "severity": 0.7, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.99, "anomaly_score": 0.2652}, {"id": "CKV_K8S_28", "asset": "/main.tf", "tool": "checkov", "risk_score": 0.6985, "risk_label": "HIGH", "severity": 0.7, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.99, "anomaly_score": 0.2652}, {"id": "CVE-2023-50447", "asset": "requirements.txt", "tool": "trivy", "risk_score": 0.6865, "risk_label": "HIGH", "severity": 0.81, "confidence": 0.85, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 1.0, "anomaly_score": 0.2481}, {"id": "CVE-2023-30861", "asset": "requirements.txt", "tool": "trivy", "risk_score": 0.6625, "risk_label": "HIGH", "severity": 0.75, "confidence": 0.85, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 1.0, "anomaly_score": 0.076}, {"id": "CVE-2023-25577", "asset": "requirements.txt", "tool": "trivy", "risk_score": 0.6625, "risk_label": "HIGH", "severity": 0.75, "confidence": 0.85, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 1.0, "anomaly_score": 0.076}, {"id": "CVE-2023-50782", "asset": "requirements.txt", "tool": "trivy", "risk_score": 0.6625, "risk_label": "HIGH", "severity": 0.75, "confidence": 0.85, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 1.0, "anomaly_score": 0.076}, {"id": "CKV_DOCKER_2", "asset": "/Dockerfile", "tool": "checkov", "risk_score": 0.6105, "risk_label": "HIGH", "severity": 0.5, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.9444, "anomaly_score": 0.0}, {"id": "CKV_DOCKER_3", "asset": "/Dockerfile", "tool": "checkov", "risk_score": 0.6105, "risk_label": "HIGH", "severity": 0.5, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.9444, "anomaly_score": 0.0}, {"id": "CKV_K8S_9", "asset": "/main.tf", "tool": "checkov", "risk_score": 0.6105, "risk_label": "HIGH", "severity": 0.5, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.9444, "anomaly_score": 0.0}, {"id": "CKV_K8S_12", "asset": "/main.tf", "tool": "checkov", "risk_score": 0.6105, "risk_label": "HIGH", "severity": 0.5, "confidence": 0.8, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 0.9444, "anomaly_score": 0.0}, {"id": "CVE-2024-34064", "asset": "requirements.txt", "tool": "trivy", "risk_score": 0.5625, "risk_label": "HIGH", "severity": 0.5, "confidence": 0.85, "freshness": 1.0, "high_risk": 1, "ml_risk_probability": 1.0, "anomaly_score": 0.5491}, {"id": "dockerfile.security.missing-user.missing-user", "asset": "app/starbucks/Dockerfile", "tool": "semgrep", "risk_score": 0.3487, "risk_label": "LOW", "severity": 0.1, "confidence": 0.75, "freshness": 1.0, "high_risk": 0, "ml_risk_probability": 0.0, "anomaly_score": 0.2549}, {"id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY", "asset": "app/starbucks/app.py", "tool": "semgrep", "risk_score": 0.3487, "risk_label": "LOW", "severity": 0.1, "confidence": 0.75, "freshness": 1.0, "high_risk": 0, "ml_risk_probability": 0.0, "anomaly_score": 0.2549}, {"id": "python.django.security.injection.tainted-sql-string.tainted-sql-string", "asset": "app/starbucks/app.py", "tool": "semgrep", "risk_score": 0.3487, "risk_label": "LOW", "severity": 0.1, "confidence": 0.75, "freshness": 1.0, "high_risk": 0, "ml_risk_probability": 0.0, "anomaly_score": 0.2549}, {"id": "python.flask.security.open-redirect.open-redirect", "asset": "app/starbucks/app.py", "tool": "semgrep", "risk_score": 0.3487, "risk_label": "LOW", "severity": 0.1, "confidence": 0.75, "freshness": 1.0, "high_risk": 0, "ml_risk_probability": 0.0, "anomaly_score": 0.2549}, {"id": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host", "asset": "app/starbucks/app.py", "tool": "semgrep", "risk_score": 0.3487, "risk_label": "LOW", "severity": 0.1, "confidence": 0.75, "freshness": 1.0, "high_risk": 0, "ml_risk_probability": 0.0, "anomaly_score": 0.2549}];
+
+const stats = {"total_findings": 18, "avg_risk": 0.5707, "max_risk": 0.7545, "min_risk": 0.3487, "critical_count": 1, "high_count": 12, "medium_count": 0, "low_count": 5};
+
+
+// Build ML lookup
+const mlLookup = {};
+mlData.forEach(m => { mlLookup[m.id] = m; });
+
+const COLORS = { CRITICAL: '#ef4444', HIGH: '#f97316', MEDIUM: '#eab308', LOW: '#3b82f6', INFO: '#6b7280' };
+
+// Gate status
+const gateEl = document.getElementById('gateStatus');
+if (stats.critical_count > 0 || stats.max_risk >= 0.7) {
+  gateEl.innerHTML = '<div class="gate-status gate-fail"><div class="pulse pulse-red"></div>GATE FAILED</div>';
+} else {
+  gateEl.innerHTML = '<div class="gate-status gate-pass"><div class="pulse pulse-green"></div>GATE PASSED</div>';
+}
+
+// Stat cards
+const grid = document.getElementById('statsGrid');
+const cards = [
+  { label: 'Total Findings', value: stats.total_findings || 0, cls: 'total', sub: 'Avg: ' + (stats.avg_risk || 0) },
+  { label: 'Max Risk Score', value: stats.max_risk || 0, cls: 'score', sub: 'Highest single finding' },
+  { label: 'Critical', value: stats.critical_count || 0, cls: 'critical', sub: 'Zero tolerance' },
+  { label: 'High', value: stats.high_count || 0, cls: 'high', sub: 'Score >= 0.55' },
+  { label: 'Medium', value: stats.medium_count || 0, cls: 'medium', sub: 'Score >= 0.35' },
+  { label: 'Low', value: stats.low_count || 0, cls: 'low', sub: 'Score < 0.35' },
+];
+cards.forEach(c => {
+  grid.innerHTML += '<div class="stat-card ' + c.cls + '">' +
+    '<div class="label">' + c.label + '</div>' +
+    '<div class="value">' + c.value + '</div>' +
+    '<div class="sub">' + c.sub + '</div></div>';
+});
+
+// Charts — only render if Chart.js loaded
+function renderCharts() {
+  if (typeof Chart === 'undefined') {
+    document.querySelectorAll('.chart-container').forEach(el => {
+      el.innerHTML = '<div class="no-charts">Charts require internet (Chart.js CDN)</div>';
+    });
+    return;
+  }
+
+  // Risk Distribution Doughnut
+  const riskBuckets = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, INFO: 0 };
+  findings.forEach(f => { riskBuckets[f.risk_label || 'LOW']++; });
+  new Chart(document.getElementById('riskDistChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(riskBuckets),
+      datasets: [{ data: Object.values(riskBuckets), backgroundColor: Object.keys(riskBuckets).map(k => COLORS[k]), borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 } } } },
+      cutout: '55%'
+    }
+  });
+
+  // Tool + Severity Stacked Bar
+  const toolSev = {};
+  findings.forEach(f => {
+    const t = f.tool || 'unknown';
+    if (!toolSev[t]) toolSev[t] = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, INFO: 0 };
+    toolSev[t][f.risk_label || 'LOW']++;
+  });
+  const toolLabels = Object.keys(toolSev);
+  const sevOrder = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO'];
+  new Chart(document.getElementById('toolChart'), {
+    type: 'bar',
+    data: {
+      labels: toolLabels,
+      datasets: sevOrder.map(s => ({
+        label: s, data: toolLabels.map(t => toolSev[t][s] || 0), backgroundColor: COLORS[s],
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, ticks: { color: '#94a3b8' }, grid: { display: false } },
+        y: { stacked: true, ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.04)' } }
+      },
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } }
+    }
+  });
+
+  // Score Breakdown Horizontal Bar
+  const topN = findings.slice(0, 8);
+  const bLabels = topN.map(f => f.id || 'unknown');
+  const wKeys = ['severity', 'exposure', 'criticality', 'confidence', 'freshness'];
+  const wColors = ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#8b5cf6'];
+  new Chart(document.getElementById('breakdownChart'), {
+    type: 'bar',
+    data: {
+      labels: bLabels,
+      datasets: wKeys.map((k, i) => ({
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+        data: topN.map(f => (f.explanation && f.explanation.score_breakdown && f.explanation.score_breakdown[k]) || 0),
+        backgroundColor: wColors[i],
+      }))
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { stacked: true, ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } }
+      },
+      plugins: { legend: { labels: { color: '#94a3b8', font: { size: 10 } } } }
+    }
+  });
+
+  // ML vs Rule Scatter
+  const mlFindings = findings.filter(f => mlLookup[f.id]);
+  new Chart(document.getElementById('mlChart'), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: 'Findings',
+        data: mlFindings.map(f => ({ x: f.risk_score, y: mlLookup[f.id] ? mlLookup[f.id].ml_risk_probability : 0 })),
+        backgroundColor: mlFindings.map(f => COLORS[f.risk_label] || '#6b7280'),
+        pointRadius: 8, pointHoverRadius: 12,
+      }, {
+        label: 'Perfect correlation',
+        data: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+        type: 'line', borderColor: 'rgba(255,255,255,0.15)', borderDash: [6, 4], pointRadius: 0,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { title: { display: true, text: 'Rule-Based Score', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, min: 0, max: 1, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { title: { display: true, text: 'ML Probability', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, min: 0, max: 1, grid: { color: 'rgba(255,255,255,0.04)' } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+// Table rendering
+function getBarColor(score) {
+  if (score >= 0.75) return COLORS.CRITICAL;
+  if (score >= 0.55) return COLORS.HIGH;
+  if (score >= 0.35) return COLORS.MEDIUM;
+  return COLORS.LOW;
+}
+
+function renderTable(filter) {
+  const tbody = document.getElementById('findingsBody');
+  const filtered = filter === 'all' ? findings : findings.filter(f => f.risk_label === filter);
+
+  tbody.innerHTML = filtered.map((f, i) => {
+    const ml = mlLookup[f.id];
+    const mlProb = ml ? ml.ml_risk_probability : null;
+    const barColor = getBarColor(f.risk_score);
+    const pct = Math.round(f.risk_score * 100);
+    const toolClass = 'tool-' + (f.tool || 'unknown');
+    const badgeClass = 'badge-' + (f.risk_label || 'low').toLowerCase();
+
+    let row = '<tr style="cursor:pointer" onclick="toggleExplanation(' + i + ')">';
+    row += '<td><span class="badge ' + badgeClass + '">' + (f.risk_label || 'LOW') + '</span></td>';
+    row += '<td><div class="score-bar"><span class="score-val" style="color:' + barColor + '">' + f.risk_score + '</span>';
+    row += '<div class="score-bar-track"><div class="score-bar-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div></div></td>';
+    row += '<td><span class="tool-badge ' + toolClass + '">' + (f.tool || '') + '</span></td>';
+    row += '<td class="mono">' + (f.id || '') + '</td>';
+    row += '<td class="text-truncate">' + (f.issue_type || '') + '</td>';
+    row += '<td class="mono text-truncate">' + (f.asset || '') + '</td>';
+    row += '<td>' + (f.stage || '') + '</td>';
+    row += '<td class="mono">' + (mlProb !== null ? mlProb.toFixed(2) : '—') + '</td>';
+    row += '</tr>';
+
+    // Explanation row
+    row += '<tr class="explanation-row" id="explain-' + i + '"><td colspan="8"><div class="explanation-content">';
+    row += '<div style="font-size:0.75rem;font-weight:600;margin-bottom:0.5rem;color:var(--accent-cyan)">Score Explanation</div>';
+    row += '<div class="explanation-grid">';
+    if (f.explanation && f.explanation.score_breakdown) {
+      Object.entries(f.explanation.score_breakdown).forEach(([k, v]) => {
+        const w = f.explanation.weights ? f.explanation.weights[k] : '?';
+        row += '<div class="explain-item"><span class="ek">' + k + '</span><span class="ev">' + v + ' (weight: ' + w + ')</span></div>';
+      });
+    }
+    if (f.explanation && f.explanation.feature_values) {
+      Object.entries(f.explanation.feature_values).forEach(([k, v]) => {
+        row += '<div class="explain-item"><span class="ek">' + k + '</span><span class="ev">' + v + '</span></div>';
+      });
+    }
+    row += '</div></div></td></tr>';
+    return row;
+  }).join('');
+}
+
+function toggleExplanation(i) {
+  const el = document.getElementById('explain-' + i);
+  if (el) el.classList.toggle('visible');
+}
+
+function filterFindings(filter) {
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+    if (b.textContent.trim().toUpperCase() === filter || (filter === 'all' && b.textContent.trim() === 'All')) {
+      b.classList.add('active');
+    }
+  });
+  renderTable(filter);
+}
+
+// Initialize
+renderTable('all');
+
+// Render charts after page load (gives Chart.js time to load from CDN)
+window.addEventListener('load', renderCharts);
+</script>
+</body>
+</html>

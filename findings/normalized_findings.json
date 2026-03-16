@@ -1,0 +1,1231 @@
+[
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/Dockerfile",
+    "issue_type": "dockerfile.security.missing-user.missing-user",
+    "id": "dockerfile.security.missing-user.missing-user",
+    "severity": 1,
+    "evidence": "By not specifying a USER, a program in the container may run as 'root'. This is a security hazard. If an attacker can control a process running as root, they may have control over the container. Ensure that the last USER in a Dockerfile is a USER other than 'root'.",
+    "timestamp": "2026-03-16T22:46:06.072256+00:00",
+    "metadata": {
+      "line_start": 22,
+      "line_end": 22
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+    "id": "python.flask.security.audit.hardcoded-config.avoid_hardcoded_config_SECRET_KEY",
+    "severity": 1,
+    "evidence": "Hardcoded variable `SECRET_KEY` detected. Use environment variables or config files instead",
+    "timestamp": "2026-03-16T22:46:06.072269+00:00",
+    "metadata": {
+      "line_start": 28,
+      "line_end": 28
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.django.security.injection.tainted-sql-string.tainted-sql-string",
+    "id": "python.django.security.injection.tainted-sql-string.tainted-sql-string",
+    "severity": 1,
+    "evidence": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using the Django object-relational mappers (ORM) instead of raw SQL queries.",
+    "timestamp": "2026-03-16T22:46:06.072276+00:00",
+    "metadata": {
+      "line_start": 47,
+      "line_end": 47
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+    "id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+    "severity": 1,
+    "evidence": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.",
+    "timestamp": "2026-03-16T22:46:06.072283+00:00",
+    "metadata": {
+      "line_start": 47,
+      "line_end": 47
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+    "id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+    "severity": 1,
+    "evidence": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
+    "timestamp": "2026-03-16T22:46:06.072286+00:00",
+    "metadata": {
+      "line_start": 48,
+      "line_end": 48
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+    "id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
+    "severity": 1,
+    "evidence": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.",
+    "timestamp": "2026-03-16T22:46:06.072289+00:00",
+    "metadata": {
+      "line_start": 58,
+      "line_end": 58
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+    "id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+    "severity": 1,
+    "evidence": "Detected possible formatted SQL query. Use parameterized queries instead.",
+    "timestamp": "2026-03-16T22:46:06.072292+00:00",
+    "metadata": {
+      "line_start": 59,
+      "line_end": 59
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+    "id": "python.sqlalchemy.security.sqlalchemy-execute-raw-query.sqlalchemy-execute-raw-query",
+    "severity": 1,
+    "evidence": "Avoiding SQL string concatenation: untrusted input concatenated with raw SQL query can result in SQL Injection. In order to execute raw query safely, prepared statement should be used. SQLAlchemy provides TextualSQL to easily used prepared statement with named parameters. For complex SQL composition, use SQL Expression Language or Schema Definition Language. In most cases, SQLAlchemy ORM will be a better option.",
+    "timestamp": "2026-03-16T22:46:06.072297+00:00",
+    "metadata": {
+      "line_start": 59,
+      "line_end": 59
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.lang.security.dangerous-system-call.dangerous-system-call",
+    "id": "python.lang.security.dangerous-system-call.dangerous-system-call",
+    "severity": 1,
+    "evidence": "Found user-controlled data used in a system call. This could allow a malicious actor to execute commands. Use the 'subprocess' module instead, which is easier to use without accidentally exposing a command injection vulnerability.",
+    "timestamp": "2026-03-16T22:46:06.072301+00:00",
+    "metadata": {
+      "line_start": 73,
+      "line_end": 73
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.injection.subprocess-injection.subprocess-injection",
+    "id": "python.flask.security.injection.subprocess-injection.subprocess-injection",
+    "severity": 1,
+    "evidence": "Detected user input entering a `subprocess` call unsafely. This could result in a command injection vulnerability. An attacker could use this vulnerability to execute arbitrary commands on the host, which allows them to download malware, scan sensitive data, or run any command they wish on the server. Do not let users choose the command to run. In general, prefer to use Python API versions of system commands. If you must use subprocess, use a dictionary to allowlist a set of commands.",
+    "timestamp": "2026-03-16T22:46:06.072304+00:00",
+    "metadata": {
+      "line_start": 83,
+      "line_end": 86
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.lang.security.dangerous-subprocess-use.dangerous-subprocess-use",
+    "id": "python.lang.security.dangerous-subprocess-use.dangerous-subprocess-use",
+    "severity": 1,
+    "evidence": "Detected subprocess function 'check_output' with user controlled data. A malicious actor could leverage this to perform command injection. You may consider using 'shlex.escape()'.",
+    "timestamp": "2026-03-16T22:46:06.072306+00:00",
+    "metadata": {
+      "line_start": 84,
+      "line_end": 84
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+    "id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+    "severity": 1,
+    "evidence": "Found 'subprocess' function 'check_output' with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+    "timestamp": "2026-03-16T22:46:06.072308+00:00",
+    "metadata": {
+      "line_start": 85,
+      "line_end": 85
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.insecure-deserialization.insecure-deserialization",
+    "id": "python.flask.security.insecure-deserialization.insecure-deserialization",
+    "severity": 1,
+    "evidence": "Detected the use of an insecure deserialization library in a Flask route. These libraries are prone to code execution vulnerabilities. Ensure user data does not enter this function. To fix this, try to avoid serializing whole objects. Consider instead using a serializer such as JSON.",
+    "timestamp": "2026-03-16T22:46:06.072310+00:00",
+    "metadata": {
+      "line_start": 115,
+      "line_end": 115
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+    "id": "python.lang.security.audit.md5-used-as-password.md5-used-as-password",
+    "severity": 1,
+    "evidence": "It looks like MD5 is used as a password hash. MD5 is not considered a secure password hash because it can be cracked by an attacker in a short amount of time. Use a suitable password hashing function such as scrypt. You can use `hashlib.scrypt`.",
+    "timestamp": "2026-03-16T22:46:06.072313+00:00",
+    "metadata": {
+      "line_start": 130,
+      "line_end": 130
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.open-redirect.open-redirect",
+    "id": "python.flask.security.open-redirect.open-redirect",
+    "severity": 1,
+    "evidence": "Data from request is passed to redirect(). This is an open redirect and could be exploited. Consider using 'url_for()' to generate links to known locations. If you must use a URL to unknown pages, consider using 'urlparse()' or similar and checking if the 'netloc' property is the same as your site's host name. See the references for more information.",
+    "timestamp": "2026-03-16T22:46:06.072315+00:00",
+    "metadata": {
+      "line_start": 148,
+      "line_end": 151
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host",
+    "id": "python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host",
+    "severity": 1,
+    "evidence": "Running flask app with host 0.0.0.0 could expose the server publicly.",
+    "timestamp": "2026-03-16T22:46:06.072317+00:00",
+    "metadata": {
+      "line_start": 177,
+      "line_end": 181
+    }
+  },
+  {
+    "tool": "semgrep",
+    "stage": "SAST",
+    "asset": "app/starbucks/app.py",
+    "issue_type": "python.flask.security.audit.debug-enabled.debug-enabled",
+    "id": "python.flask.security.audit.debug-enabled.debug-enabled",
+    "severity": 1,
+    "evidence": "Detected Flask app with debug=True. Do not deploy to production with this flag enabled as it will leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug' using system environment variables.",
+    "timestamp": "2026-03-16T22:46:06.072319+00:00",
+    "metadata": {
+      "line_start": 177,
+      "line_end": 181
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-30861",
+    "severity": 7,
+    "evidence": "flask: Possible disclosure of permanent session cookie due to missing Vary: Cookie header",
+    "timestamp": "2026-03-16T22:46:06.073351+00:00",
+    "metadata": {
+      "pkg_name": "Flask",
+      "installed_version": "2.2.0",
+      "fixed_version": "2.3.2, 2.2.5",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2026-27205",
+    "severity": 3,
+    "evidence": "flask: Flask: Information disclosure via improper caching of session data",
+    "timestamp": "2026-03-16T22:46:06.073363+00:00",
+    "metadata": {
+      "pkg_name": "Flask",
+      "installed_version": "2.2.0",
+      "fixed_version": "3.1.3",
+      "cvss_score": 4.3
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-22195",
+    "severity": 5,
+    "evidence": "jinja2: HTML attribute injection when passing user input as keys to xmlattr filter",
+    "timestamp": "2026-03-16T22:46:06.073366+00:00",
+    "metadata": {
+      "pkg_name": "Jinja2",
+      "installed_version": "3.1.2",
+      "fixed_version": "3.1.3",
+      "cvss_score": 6.1
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-34064",
+    "severity": 5,
+    "evidence": "jinja2: accepts keys containing non-attribute characters",
+    "timestamp": "2026-03-16T22:46:06.073369+00:00",
+    "metadata": {
+      "pkg_name": "Jinja2",
+      "installed_version": "3.1.2",
+      "fixed_version": "3.1.4",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-56201",
+    "severity": 5,
+    "evidence": "jinja2: Jinja has a sandbox breakout through malicious filenames",
+    "timestamp": "2026-03-16T22:46:06.073372+00:00",
+    "metadata": {
+      "pkg_name": "Jinja2",
+      "installed_version": "3.1.2",
+      "fixed_version": "3.1.5",
+      "cvss_score": 8.8
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-56326",
+    "severity": 5,
+    "evidence": "jinja2: Jinja has a sandbox breakout through indirect reference to format method",
+    "timestamp": "2026-03-16T22:46:06.073378+00:00",
+    "metadata": {
+      "pkg_name": "Jinja2",
+      "installed_version": "3.1.2",
+      "fixed_version": "3.1.5",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2025-27516",
+    "severity": 5,
+    "evidence": "jinja2: Jinja sandbox breakout through attr filter selecting format method",
+    "timestamp": "2026-03-16T22:46:06.073382+00:00",
+    "metadata": {
+      "pkg_name": "Jinja2",
+      "installed_version": "3.1.2",
+      "fixed_version": "3.1.6",
+      "cvss_score": 8.8
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-25577",
+    "severity": 7,
+    "evidence": "python-werkzeug: high resource usage when parsing multipart form data with many fields",
+    "timestamp": "2026-03-16T22:46:06.073387+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "2.2.3",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-34069",
+    "severity": 7,
+    "evidence": "python-werkzeug: user may execute code on a developer's machine",
+    "timestamp": "2026-03-16T22:46:06.073391+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.0.3",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-46136",
+    "severity": 5,
+    "evidence": "python-werkzeug: high resource consumption leading to denial of service",
+    "timestamp": "2026-03-16T22:46:06.073394+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.0.1, 2.3.8",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-49766",
+    "severity": 5,
+    "evidence": "werkzeug: python-werkzeug: Werkzeug safe_join not safe on Windows",
+    "timestamp": "2026-03-16T22:46:06.073396+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.0.6",
+      "cvss_score": 5.3
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-49767",
+    "severity": 5,
+    "evidence": "werkzeug: python-werkzeug: Werkzeug possible resource exhaustion when parsing file data in forms",
+    "timestamp": "2026-03-16T22:46:06.073399+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.0.6",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2025-66221",
+    "severity": 5,
+    "evidence": "Werkzeug: Werkzeug: Denial of service via Windows device names in path segments",
+    "timestamp": "2026-03-16T22:46:06.073401+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.1.4",
+      "cvss_score": 5.3
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2026-21860",
+    "severity": 5,
+    "evidence": " Werkzeug safe_join() allows Windows special device names with compound extensions",
+    "timestamp": "2026-03-16T22:46:06.073403+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.1.5",
+      "cvss_score": 5.3
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2026-27199",
+    "severity": 5,
+    "evidence": " Werkzeug safe_join() allows Windows special device names",
+    "timestamp": "2026-03-16T22:46:06.073405+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "3.1.6",
+      "cvss_score": 5.3
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-23934",
+    "severity": 3,
+    "evidence": "python-werkzeug: cookie prefixed with = can shadow unprefixed cookie",
+    "timestamp": "2026-03-16T22:46:06.073408+00:00",
+    "metadata": {
+      "pkg_name": "Werkzeug",
+      "installed_version": "2.2.2",
+      "fixed_version": "2.2.3",
+      "cvss_score": 3.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-37920",
+    "severity": 7,
+    "evidence": "python-certifi: Removal of e-Tugra root certificate",
+    "timestamp": "2026-03-16T22:46:06.073410+00:00",
+    "metadata": {
+      "pkg_name": "certifi",
+      "installed_version": "2022.12.7",
+      "fixed_version": "2023.7.22",
+      "cvss_score": 9.8
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-39689",
+    "severity": 3,
+    "evidence": "python-certifi: Remove root certificates from `GLOBALTRUST` from the root store",
+    "timestamp": "2026-03-16T22:46:06.073412+00:00",
+    "metadata": {
+      "pkg_name": "certifi",
+      "installed_version": "2022.12.7",
+      "fixed_version": "2024.7.4",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-0286",
+    "severity": 7,
+    "evidence": "openssl: X.400 address type confusion in X.509 GeneralName",
+    "timestamp": "2026-03-16T22:46:06.073414+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "39.0.1",
+      "cvss_score": 7.4
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-50782",
+    "severity": 7,
+    "evidence": "python-cryptography: Bleichenbacher timing oracle attack against RSA decryption - incomplete fix for CVE-2020-25659",
+    "timestamp": "2026-03-16T22:46:06.073416+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "42.0.0",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2026-26007",
+    "severity": 7,
+    "evidence": "cryptography: cryptography Subgroup Attack Due to Missing Subgroup Validation for SECT Curves",
+    "timestamp": "2026-03-16T22:46:06.073419+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "46.0.5",
+      "cvss_score": 6.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-23931",
+    "severity": 5,
+    "evidence": "python-cryptography: memory corruption via immutable objects",
+    "timestamp": "2026-03-16T22:46:06.073421+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "39.0.1",
+      "cvss_score": 6.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-49083",
+    "severity": 5,
+    "evidence": "python-cryptography: NULL-dereference when loading PKCS7 certificates",
+    "timestamp": "2026-03-16T22:46:06.073423+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "41.0.6",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-0727",
+    "severity": 5,
+    "evidence": "openssl: denial of service via null dereference",
+    "timestamp": "2026-03-16T22:46:06.073425+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "42.0.2",
+      "cvss_score": 5.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "GHSA-5cpq-8wj7-hf2v",
+    "severity": 3,
+    "evidence": "Vulnerable OpenSSL included in cryptography wheels",
+    "timestamp": "2026-03-16T22:46:06.073427+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "41.0.0",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "GHSA-jm77-qphf-c4w8",
+    "severity": 3,
+    "evidence": "pyca/cryptography's wheels include vulnerable OpenSSL",
+    "timestamp": "2026-03-16T22:46:06.073432+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "41.0.3",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "GHSA-v8gr-m533-ghj9",
+    "severity": 3,
+    "evidence": "Vulnerable OpenSSL included in cryptography wheels",
+    "timestamp": "2026-03-16T22:46:06.073434+00:00",
+    "metadata": {
+      "pkg_name": "cryptography",
+      "installed_version": "3.4.8",
+      "fixed_version": "41.0.4",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2021-34141",
+    "severity": 5,
+    "evidence": "numpy: incomplete string comparison in the numpy.core component",
+    "timestamp": "2026-03-16T22:46:06.073436+00:00",
+    "metadata": {
+      "pkg_name": "numpy",
+      "installed_version": "1.21.0",
+      "fixed_version": "1.22",
+      "cvss_score": 5.3
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-48795",
+    "severity": 5,
+    "evidence": "ssh: Prefix truncation attack on Binary Packet Protocol (BPP)",
+    "timestamp": "2026-03-16T22:46:06.073440+00:00",
+    "metadata": {
+      "pkg_name": "paramiko",
+      "installed_version": "2.11.0",
+      "fixed_version": "3.4.0",
+      "cvss_score": 5.9
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-50447",
+    "severity": 9,
+    "evidence": "pillow: Arbitrary Code Execution via the environment parameter",
+    "timestamp": "2026-03-16T22:46:06.073442+00:00",
+    "metadata": {
+      "pkg_name": "pillow",
+      "installed_version": "9.3.0",
+      "fixed_version": "10.2.0",
+      "cvss_score": 8.1
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-44271",
+    "severity": 7,
+    "evidence": "python-pillow: uncontrolled resource consumption when textlength in an ImageDraw instance operates on a long text argument",
+    "timestamp": "2026-03-16T22:46:06.073445+00:00",
+    "metadata": {
+      "pkg_name": "pillow",
+      "installed_version": "9.3.0",
+      "fixed_version": "10.0.0",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-4863",
+    "severity": 7,
+    "evidence": "libwebp: Heap buffer overflow in WebP Codec",
+    "timestamp": "2026-03-16T22:46:06.073447+00:00",
+    "metadata": {
+      "pkg_name": "pillow",
+      "installed_version": "9.3.0",
+      "fixed_version": "10.0.1",
+      "cvss_score": 8.8
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-28219",
+    "severity": 7,
+    "evidence": "python-pillow: buffer overflow in _imagingcms.c",
+    "timestamp": "2026-03-16T22:46:06.073449+00:00",
+    "metadata": {
+      "pkg_name": "pillow",
+      "installed_version": "9.3.0",
+      "fixed_version": "10.3.0",
+      "cvss_score": 5.9
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-32681",
+    "severity": 5,
+    "evidence": "python-requests: Unintended leak of Proxy-Authorization header",
+    "timestamp": "2026-03-16T22:46:06.073451+00:00",
+    "metadata": {
+      "pkg_name": "requests",
+      "installed_version": "2.28.0",
+      "fixed_version": "2.31.0",
+      "cvss_score": 6.1
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-35195",
+    "severity": 5,
+    "evidence": "requests: subsequent requests to the same host ignore cert verification",
+    "timestamp": "2026-03-16T22:46:06.073454+00:00",
+    "metadata": {
+      "pkg_name": "requests",
+      "installed_version": "2.28.0",
+      "fixed_version": "2.32.0",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-47081",
+    "severity": 5,
+    "evidence": "requests: Requests vulnerable to .netrc credentials leak via malicious URLs",
+    "timestamp": "2026-03-16T22:46:06.073458+00:00",
+    "metadata": {
+      "pkg_name": "requests",
+      "installed_version": "2.28.0",
+      "fixed_version": "2.32.4",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2022-40897",
+    "severity": 7,
+    "evidence": "pypa-setuptools: Regular Expression Denial of Service (ReDoS) in package_index.py",
+    "timestamp": "2026-03-16T22:46:06.073460+00:00",
+    "metadata": {
+      "pkg_name": "setuptools",
+      "installed_version": "65.5.0",
+      "fixed_version": "65.5.1",
+      "cvss_score": 5.9
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-6345",
+    "severity": 7,
+    "evidence": "pypa/setuptools: Remote code execution via download functions in the package_index module in pypa/setuptools",
+    "timestamp": "2026-03-16T22:46:06.073464+00:00",
+    "metadata": {
+      "pkg_name": "setuptools",
+      "installed_version": "65.5.0",
+      "fixed_version": "70.0.0",
+      "cvss_score": null
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2025-47273",
+    "severity": 7,
+    "evidence": "setuptools: Path Traversal Vulnerability in setuptools PackageIndex",
+    "timestamp": "2026-03-16T22:46:06.073466+00:00",
+    "metadata": {
+      "pkg_name": "setuptools",
+      "installed_version": "65.5.0",
+      "fixed_version": "78.1.1",
+      "cvss_score": 8.8
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-43804",
+    "severity": 7,
+    "evidence": "python-urllib3: Cookie request header isn't stripped during cross-origin redirects",
+    "timestamp": "2026-03-16T22:46:06.073468+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "2.0.6, 1.26.17",
+      "cvss_score": 8.1
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2025-66418",
+    "severity": 7,
+    "evidence": "urllib3: urllib3: Unbounded decompression chain leads to resource exhaustion",
+    "timestamp": "2026-03-16T22:46:06.073470+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "2.6.0",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2025-66471",
+    "severity": 7,
+    "evidence": "urllib3: urllib3 Streaming API improperly handles highly compressed data",
+    "timestamp": "2026-03-16T22:46:06.073473+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "2.6.0",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2026-21441",
+    "severity": 7,
+    "evidence": "urllib3: urllib3 vulnerable to decompression-bomb safeguard bypass when following HTTP redirects (streaming API)",
+    "timestamp": "2026-03-16T22:46:06.073475+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "2.6.3",
+      "cvss_score": 7.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2023-45803",
+    "severity": 5,
+    "evidence": "urllib3: Request body not stripped after redirect from 303 status changes request method to GET",
+    "timestamp": "2026-03-16T22:46:06.073477+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "2.0.7, 1.26.18",
+      "cvss_score": 4.2
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2024-37891",
+    "severity": 5,
+    "evidence": "urllib3: proxy-authorization request header is not stripped during cross-origin redirects",
+    "timestamp": "2026-03-16T22:46:06.073482+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "1.26.19, 2.2.2",
+      "cvss_score": 6.5
+    }
+  },
+  {
+    "tool": "trivy",
+    "stage": "SCA",
+    "asset": "requirements.txt",
+    "issue_type": "CVE",
+    "id": "CVE-2025-50181",
+    "severity": 5,
+    "evidence": "urllib3: urllib3 redirects are not disabled when retries are disabled on PoolManager instantiation",
+    "timestamp": "2026-03-16T22:46:06.073484+00:00",
+    "metadata": {
+      "pkg_name": "urllib3",
+      "installed_version": "1.26.5",
+      "fixed_version": "2.5.0",
+      "cvss_score": 6.1
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/Dockerfile",
+    "issue_type": "Ensure that HEALTHCHECK instructions have been added to container images",
+    "id": "CKV_DOCKER_2",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-healthcheck-instructions-have-been-added-to-container-images",
+    "timestamp": "2026-03-16T22:46:06.074028+00:00",
+    "metadata": {
+      "resource": "/Dockerfile.",
+      "file_line_range": [
+        1,
+        22
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/Dockerfile",
+    "issue_type": "Ensure that a user for the container has been created",
+    "id": "CKV_DOCKER_3",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-a-user-for-the-container-has-been-created",
+    "timestamp": "2026-03-16T22:46:06.074035+00:00",
+    "metadata": {
+      "resource": "/Dockerfile.",
+      "file_line_range": [
+        1,
+        22
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Image should use digest",
+    "id": "CKV_K8S_43",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-39",
+    "timestamp": "2026-03-16T22:46:06.075667+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Use read-only filesystem for containers where possible",
+    "id": "CKV_K8S_22",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-21",
+    "timestamp": "2026-03-16T22:46:06.075675+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Minimize the admission of containers with the NET_RAW capability",
+    "id": "CKV_K8S_28",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-27",
+    "timestamp": "2026-03-16T22:46:06.075678+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Image Tag should be fixed - not latest or blank",
+    "id": "CKV_K8S_14",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-13",
+    "timestamp": "2026-03-16T22:46:06.075683+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Readiness Probe Should be Configured",
+    "id": "CKV_K8S_9",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-8",
+    "timestamp": "2026-03-16T22:46:06.075686+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "The default namespace should not be used",
+    "id": "CKV_K8S_21",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-20",
+    "timestamp": "2026-03-16T22:46:06.075690+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Do not admit privileged containers",
+    "id": "CKV_K8S_16",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-15",
+    "timestamp": "2026-03-16T22:46:06.075692+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Memory Limits should be set",
+    "id": "CKV_K8S_12",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-11",
+    "timestamp": "2026-03-16T22:46:06.075698+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Memory requests should be set",
+    "id": "CKV_K8S_13",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-12",
+    "timestamp": "2026-03-16T22:46:06.075700+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "CPU requests should be set",
+    "id": "CKV_K8S_10",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-9",
+    "timestamp": "2026-03-16T22:46:06.075702+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "CPU Limits should be set",
+    "id": "CKV_K8S_11",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-10",
+    "timestamp": "2026-03-16T22:46:06.075705+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "Liveness Probe Should be Configured",
+    "id": "CKV_K8S_8",
+    "severity": 5,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-7",
+    "timestamp": "2026-03-16T22:46:06.075707+00:00",
+    "metadata": {
+      "resource": "kubernetes_deployment.vulnerable_app",
+      "file_line_range": [
+        24,
+        92
+      ]
+    }
+  },
+  {
+    "tool": "checkov",
+    "stage": "IaC",
+    "asset": "/main.tf",
+    "issue_type": "The default namespace should not be used",
+    "id": "CKV_K8S_21",
+    "severity": 7,
+    "evidence": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-20",
+    "timestamp": "2026-03-16T22:46:06.075709+00:00",
+    "metadata": {
+      "resource": "kubernetes_service.vulnerable_service",
+      "file_line_range": [
+        98,
+        119
+      ]
+    }
+  }
+]

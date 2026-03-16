@@ -1,0 +1,10 @@
+[
+  {
+    "timestamp": "2026-03-16T22:46:10.205713+00:00",
+    "commit": "00176547",
+    "run_number": "3",
+    "avg_risk": 0.571,
+    "max_risk": 0.754,
+    "total_findings": 18
+  }
+]
