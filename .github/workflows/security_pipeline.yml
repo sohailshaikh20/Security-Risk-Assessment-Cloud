@@ -1,0 +1,192 @@
+name: DevSecOps AI Security Pipeline
+
+permissions:
+  contents: write
+  security-events: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  # =====================================================
+  # STAGE 1: Run all security scanners
+  # =====================================================
+
+  security-scans:
+    if: "!contains(github.event.head_commit.message, '[auto]')"
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install scanner tools
+        run: pip install semgrep checkov
+
+      - name: Create findings folder
+        run: mkdir -p findings
+
+      - name: Run Semgrep (SAST)
+        run: |
+          semgrep --config=auto app/starbucks --json > findings/semgrep.json || true
+
+      - name: Run Trivy (SCA)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "app/starbucks"
+          format: "json"
+          output: "findings/trivy.json"
+
+      - name: Run Checkov — App Scan
+        run: |
+          checkov -d app/starbucks --output json > findings/checkov.json || true
+
+      - name: Run Checkov — Terraform Scan
+        run: |
+          checkov -d terraform --output json > findings/terraform_checkov.json || true
+
+      - name: Upload scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-results
+          path: findings/
+
+
+  # =====================================================
+  # STAGE 2: Normalize → Correlate → Score → ML → Viz
+  # =====================================================
+
+  risk-analysis:
+    needs: security-scans
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download scan results
+        uses: actions/download-artifact@v4
+        with:
+          name: scan-results
+          path: findings/
+
+      - name: Normalize findings
+        run: python risk_engine/normalize.py
+
+      - name: Correlate vulnerabilities
+        run: python risk_engine/correlate.py
+
+      - name: Compute risk scores
+        run: python risk_engine/score.py
+
+      - name: Run ML analysis
+        run: python risk_engine/ml_model.py
+
+      - name: Generate visualizations
+        run: |
+          python risk_engine/visualize.py
+          python risk_engine/trend_analysis.py
+          python risk_engine/dashboard.py
+          python risk_engine/sarif_report.py
+
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: findings/
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: findings/devsecops-results.sarif
+          category: devsecops-risk-engine
+
+
+  # =====================================================
+  # STAGE 3: Security gate decision
+  # =====================================================
+
+  security-gate:
+    needs: risk-analysis
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download reports
+        uses: actions/download-artifact@v4
+        with:
+          name: security-reports
+          path: findings/
+
+      - name: Apply security gate
+        run: python risk_engine/gate.py
+
+
+  # =====================================================
+  # STAGE 4: Commit reports (runs even if gate fails)
+  # =====================================================
+
+  commit-reports:
+    needs: [risk-analysis, security-gate]
+    if: always() && needs.risk-analysis.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download reports
+        uses: actions/download-artifact@v4
+        with:
+          name: security-reports
+          path: findings/
+
+      - name: Commit security reports
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+          git add -f findings/*.json || true
+          git add -f findings/*.md || true
+          git add -f findings/*.png || true
+          git add -f findings/*.html || true
+          git add -f findings/*.sarif || true
+
+          GATE_STATUS="${{ needs.security-gate.result }}"
+          if [ "$GATE_STATUS" = "success" ]; then
+            MSG="✅ Security analysis passed [auto]"
+          else
+            MSG="❌ Security analysis — gate failed [auto]"
+          fi
+
+          git commit -m "$MSG" || true
+          git push || true

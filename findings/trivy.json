@@ -1,0 +1,10 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.69.3"
+  },
+  "ReportID": "019cce33-9109-76c9-a941-0f8ee3e5f283",
+  "CreatedAt": "2026-03-08T16:06:51.913445532Z",
+  "ArtifactName": "app/starbucks",
+  "ArtifactType": "filesystem"
+}
